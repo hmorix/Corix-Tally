@@ -1,0 +1,90 @@
+// MongoDB template. Uses plain String ids (cuid, mapped to _id) rather than
+// Mongo's native ObjectId type — keeps ids provider-agnostic, and combined
+// with schema.relational.prisma also having no @relation fields, means
+// routes/*.js is IDENTICAL Prisma Client code regardless of which database
+// is actually running underneath.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/mongo"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+model User {
+  id                  String   @id @default(cuid()) @map("_id")
+  email               String   @unique
+  passwordHash        String?
+  fullName            String?
+  googleId            String?  @unique
+  entryLimit          Int      @default(50000)
+  googleSheetId       String?
+  googleAccessToken   String?
+  createdAt           DateTime @default(now())
+}
+
+model Company {
+  id                 String   @id @default(cuid()) @map("_id")
+  userId             String
+  name               String
+  gstin              String?
+  state              String?
+  financialYearStart DateTime @default(now())
+  createdAt          DateTime @default(now())
+}
+
+model LedgerGroup {
+  id        String  @id @default(cuid()) @map("_id")
+  companyId String
+  name      String
+  nature    String
+  isSystem  Boolean @default(false)
+}
+
+model Ledger {
+  id                 String   @id @default(cuid()) @map("_id")
+  companyId          String
+  groupId            String?
+  name               String
+  openingBalance     Float    @default(0)
+  openingBalanceType String   @default("debit")
+  gstRate            Float?
+  createdAt          DateTime @default(now())
+}
+
+model Voucher {
+  id            String   @id @default(cuid()) @map("_id")
+  companyId     String
+  voucherType   String
+  voucherNumber String?
+  voucherDate   DateTime
+  narration     String?
+  partyName     String?
+  partyGstin    String?
+  placeOfSupply String?
+  invoiceNumber String?
+  invoiceType   String?  @default("regular")
+  createdAt     DateTime @default(now())
+}
+
+model VoucherEntry {
+  id        String @id @default(cuid()) @map("_id")
+  voucherId String
+  ledgerId  String
+  debit     Float  @default(0)
+  credit    Float  @default(0)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid()) @map("_id")
+  userId     String
+  companyId  String?
+  entityType String
+  entityId   String
+  action     String
+  detail     String?
+  createdAt  DateTime @default(now())
+}

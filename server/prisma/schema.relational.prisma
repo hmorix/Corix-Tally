@@ -1,0 +1,91 @@
+// Template for Postgres AND MySQL/MariaDB — same file, only the `provider`
+// line differs, which scripts/generate.js rewrites automatically based on
+// which env var is set. Deliberately has NO @relation fields: every route
+// handler filters by plain foreign-key strings instead of Prisma relations,
+// which is what lets this exact schema shape (and the exact same route
+// code) also work unmodified against MongoDB — see schema.mongo.prisma.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/relational"
+}
+
+datasource db {
+  provider = "postgresql" // rewritten to "mysql" by scripts/generate.js when MYSQL_URL is set
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String   @id @default(uuid())
+  email               String   @unique
+  passwordHash        String?
+  fullName            String?
+  googleId            String?  @unique
+  entryLimit          Int      @default(50000)
+  googleSheetId       String?
+  googleAccessToken   String?
+  createdAt           DateTime @default(now())
+}
+
+model Company {
+  id                 String   @id @default(uuid())
+  userId             String
+  name               String
+  gstin              String?
+  state              String?
+  financialYearStart DateTime @default(now())
+  createdAt          DateTime @default(now())
+}
+
+model LedgerGroup {
+  id        String  @id @default(uuid())
+  companyId String
+  name      String
+  nature    String
+  isSystem  Boolean @default(false)
+}
+
+model Ledger {
+  id                 String   @id @default(uuid())
+  companyId          String
+  groupId            String?
+  name               String
+  openingBalance     Decimal  @default(0)
+  openingBalanceType String   @default("debit")
+  gstRate            Decimal?
+  createdAt          DateTime @default(now())
+}
+
+model Voucher {
+  id            String   @id @default(uuid())
+  companyId     String
+  voucherType   String
+  voucherNumber String?
+  voucherDate   DateTime
+  narration     String?
+  partyName     String?
+  partyGstin    String?
+  placeOfSupply String?
+  invoiceNumber String?
+  invoiceType   String?  @default("regular")
+  createdAt     DateTime @default(now())
+}
+
+model VoucherEntry {
+  id        String  @id @default(uuid())
+  voucherId String
+  ledgerId  String
+  debit     Decimal @default(0)
+  credit    Decimal @default(0)
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String
+  companyId  String?
+  entityType String
+  entityId   String
+  action     String
+  detail     String?
+  createdAt  DateTime @default(now())
+}
