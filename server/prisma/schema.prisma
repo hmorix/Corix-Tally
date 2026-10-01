@@ -1,17 +1,11 @@
-// Template for Postgres AND MySQL/MariaDB — same file, only the `provider`
-// line differs, which scripts/generate.js rewrites automatically based on
-// which env var is set. Deliberately has NO @relation fields: every route
-// handler filters by plain foreign-key strings instead of Prisma relations,
-// which is what lets this exact schema shape (and the exact same route
-// code) also work unmodified against MongoDB — see schema.mongo.prisma.
-
+// Default Prisma schema for Corix Tally (PostgreSQL / Supabase)
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "postgresql" // rewritten to "mysql" by scripts/generate.js when MYSQL_URL is set
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -50,9 +44,10 @@ model Ledger {
   companyId          String
   groupId            String?
   name               String
-  openingBalance     Decimal  @default(0)
+  openingBalance     Float    @default(0)
   openingBalanceType String   @default("debit")
-  gstRate            Decimal?
+  gstin              String?
+  gstRate            Float?
   createdAt          DateTime @default(now())
 }
 
@@ -61,7 +56,7 @@ model Voucher {
   companyId     String
   voucherType   String
   voucherNumber String?
-  voucherDate   DateTime
+  voucherDate   DateTime @default(now())
   narration     String?
   partyName     String?
   partyGstin    String?
@@ -72,11 +67,11 @@ model Voucher {
 }
 
 model VoucherEntry {
-  id        String  @id @default(uuid())
+  id        String @id @default(uuid())
   voucherId String
   ledgerId  String
-  debit     Decimal @default(0)
-  credit    Decimal @default(0)
+  debit     Float  @default(0)
+  credit    Float  @default(0)
 }
 
 model AuditLog {

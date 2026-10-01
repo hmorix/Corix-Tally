@@ -7,7 +7,5 @@ export function detectProvider() {
   if (process.env.MONGODB_URI) return { family: "mongo", label: "MongoDB" };
   if (process.env.MYSQL_URL) return { family: "relational", engine: "mysql", label: "MySQL / MariaDB" };
   if (process.env.DATABASE_URL) return { family: "relational", engine: "postgresql", label: "PostgreSQL (or Supabase's Postgres)" };
-  throw new Error(
-    "No database configured. Set exactly one of DATABASE_URL, MYSQL_URL, or MONGODB_URI in server/.env — see server/.env.example."
-  );
+  return { family: "relational", engine: "postgresql", label: "PostgreSQL (default)" };
 }
