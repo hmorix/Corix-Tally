@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "main": "src/index.js",
   "scripts": {
+    "build": "node scripts/generate.js",
     "setup": "node scripts/generate.js && npx prisma db push",
     "dev": "node src/index.js",
     "start": "node src/index.js"

@@ -8,7 +8,12 @@ import fs from "node:fs";
 import { execSync } from "node:child_process";
 import { detectProvider } from "../src/lib/detectProvider.js";
 
-const info = detectProvider();
+let info;
+try {
+  info = detectProvider();
+} catch {
+  info = { family: "relational", engine: "postgresql", label: "PostgreSQL (default)" };
+}
 console.log(`Detected database: ${info.label}`);
 
 let templatePath, content;
