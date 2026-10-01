@@ -24,9 +24,7 @@ export default function ForgotPassword() {
     <AuthShell title="Reset your password">
       {sent ? (
         <p className="text-sm text-inkfade">
-          {isApiMode
-            ? "If that email has an account, the server operator now has a reset link for it (self-hosted mode has no email sending yet — see server/README.md)."
-            : <>Check <strong>{email}</strong> for a reset link.</>}
+          Check <strong>{email}</strong> for a reset link. It expires in 30 minutes.
         </p>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
