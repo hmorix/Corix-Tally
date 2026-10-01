@@ -1,7 +1,7 @@
 // Thin fetch wrapper for API mode (server/ backend). Attaches the JWT this
 // app stores in localStorage after login, and throws a real Error with the
 // server's message on any non-2xx response so callers can just try/catch.
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:4000" : "");
 const TOKEN_KEY = "corix:api-token";
 
 export function getToken() { return localStorage.getItem(TOKEN_KEY); }

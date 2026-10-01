@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "version": "0.1.0",
+  "main": "src/index.js",
   "scripts": {
     "setup": "node scripts/generate.js && npx prisma db push",
     "dev": "node src/index.js",
