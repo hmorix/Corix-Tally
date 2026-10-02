@@ -2,72 +2,193 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
-  Design language: "the ledger book" — this is accounting software, so the
-  surface reads like ruled ledger paper (warm paper background, hairline
-  rules, tabular monospace figures) rather than a generic SaaS dashboard.
-  Fraunces (display) gives section headers a stamped, bookish weight;
-  IBM Plex Sans carries UI text; IBM Plex Mono is used ONLY for numbers so
-  amounts always align in columns, the way a real ledger would.
-*/
+/* ─────────────────────────────────────────────────────────────────────────────
+   Design language: "Tally Prime meets modern web"
+   ─ Deep navy sidebar (mirrors Tally Prime's dark-blue chrome)
+   ─ Light warm-paper content area (ledger-book heritage)
+   ─ IBM Plex Mono for ALL numeric columns (always aligns perfectly)
+   ─ Smooth micro-animations on navigation, form focus, hover, page load
+   ─ Full keyboard-shortcut awareness — same as Tally's own function keys
+   ─────────────────────────────────────────────────────────────────────────── */
 
 :root {
   color-scheme: light;
-  padding-top: env(safe-area-inset-top, 0px);
+  padding-top:    env(safe-area-inset-top,    0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 html, body, #root {
   height: 100%;
-  background: #EDE7D6;
 }
 
 body {
   font-family: 'IBM Plex Sans', system-ui, sans-serif;
-  color: #1F2A24;
+  color: #1A1A2E;
+  background: #F4F1E8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Typography ─────────────────────────────────────────────────────────── */
 .font-tabular {
   font-family: 'IBM Plex Mono', monospace;
   font-variant-numeric: tabular-nums;
 }
 
-/* hairline ledger rule, used instead of card shadows */
+/* ── Layout helpers ─────────────────────────────────────────────────────── */
 .rule-line {
-  border-bottom: 1px solid #C9BFA0;
+  border-bottom: 1px solid #D0CAB8;
 }
 
+/* ── Selection ──────────────────────────────────────────────────────────── */
 ::selection {
-  background: #A9822C;
-  color: #EDE7D6;
+  background: #C8922A;
+  color: #F4F1E8;
 }
 
-/* visible keyboard focus everywhere, incl. for shortcut-bar accessibility */
+/* ── Focus ring (accessibility) ─────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #A9822C;
+  outline: 2px solid #4D9FD6;
   outline-offset: 2px;
 }
 
-/* Voucher printing: #printable-voucher is rendered off-screen at all times
- * (see PrintableVoucher.jsx) and only becomes visible to the browser's
- * print pipeline here — everything else on the page is hidden for print,
- * so "Print" (or the OS's own "Save as PDF" in that same dialog) produces
- * just the voucher, not the whole app chrome. */
-#printable-voucher {
-  display: none;
+/* ── Tally Prime sidebar nav item active glow ───────────────────────────── */
+.nav-active-glow {
+  box-shadow: inset 3px 0 0 #4D9FD6;
 }
+
+/* ── Card surface ────────────────────────────────────────────────────────── */
+.tp-card {
+  background: #FFFFFF;
+  border: 1px solid #D0CAB8;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* ── Tally-style table striping ──────────────────────────────────────────── */
+.tp-table tbody tr:nth-child(even) {
+  background: rgba(0,0,0,0.018);
+}
+.tp-table tbody tr:hover {
+  background: rgba(44,95,138,0.06);
+  transition: background 0.12s;
+}
+
+/* ── Primary button (Tally blue) ─────────────────────────────────────────── */
+.btn-primary {
+  @apply bg-tp-blue text-white font-medium rounded-md px-5 py-2.5
+         hover:bg-tp-sky active:scale-95
+         transition-all duration-150 shadow-tpBtn;
+}
+
+/* ── Secondary button ────────────────────────────────────────────────────── */
+.btn-secondary {
+  @apply bg-transparent border border-tp-blue text-tp-blue font-medium rounded-md px-5 py-2.5
+         hover:bg-tp-blue/10 active:scale-95
+         transition-all duration-150;
+}
+
+/* ── Ghost/text button ────────────────────────────────────────────────────── */
+.btn-ghost {
+  @apply text-tp-blue underline underline-offset-2 text-sm
+         hover:text-tp-sky active:opacity-70 transition-colors duration-150;
+}
+
+/* ── Danger button ───────────────────────────────────────────────────────── */
+.btn-danger {
+  @apply text-seal underline underline-offset-2 text-sm
+         hover:text-red-700 active:opacity-70 transition-colors duration-150;
+}
+
+/* ── Input / Select / Textarea base ──────────────────────────────────────── */
+.tp-input {
+  @apply w-full rounded-md border border-rule bg-white px-3 py-2
+         text-sm text-ink placeholder:text-inkLight
+         focus:outline-none focus:border-tp-blue focus:ring-2 focus:ring-tp-blue/20
+         transition-all duration-150;
+}
+
+.tp-select {
+  @apply rounded-md border border-rule bg-white px-3 py-2 text-sm text-ink
+         focus:outline-none focus:border-tp-blue focus:ring-2 focus:ring-tp-blue/20
+         transition-all duration-150 cursor-pointer;
+}
+
+/* ── Status badges ────────────────────────────────────────────────────────── */
+.badge-credit {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+         bg-creditBg text-credit;
+}
+.badge-debit {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+         bg-sealBg text-seal;
+}
+.badge-voucher {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+         bg-tp-blue/10 text-tp-blue;
+}
+
+/* ── Skeleton shimmer ─────────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Page-transition wrapper ──────────────────────────────────────────────── */
+.page-enter {
+  animation: fadeIn 0.18s ease-out, slideUp 0.22s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Tally shortcut badge chips ───────────────────────────────────────────── */
+.shortcut-chip {
+  @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-tp-navy/10 text-tp-navy
+         text-xs font-tabular leading-none;
+}
+
+/* ── Amount colored numbers ───────────────────────────────────────────────── */
+.amount-credit { @apply text-credit font-tabular; }
+.amount-debit  { @apply text-seal   font-tabular; }
+.amount-zero   { @apply text-inkFade font-tabular; }
+
+/* ── Voucher print ────────────────────────────────────────────────────────── */
+#printable-voucher { display: none; }
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  #printable-voucher, #printable-voucher * {
-    visibility: visible;
-  }
+  body * { visibility: hidden; }
+  #printable-voucher, #printable-voucher * { visibility: visible; }
   #printable-voucher {
     display: block;
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    top: 0; left: 0; width: 100%;
   }
 }
+
+/* ── Scrollbar (webkit) ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #C8C0A8; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #A09880; }
+
+/* ── Tooltip ─────────────────────────────────────────────────────────────── */
+[data-tooltip] {
+  position: relative;
+  cursor: help;
+}
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: #1B2B45;
+  color: #fff;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 100;
+}
+[data-tooltip]:hover::after { opacity: 1; }
